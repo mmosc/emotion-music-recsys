@@ -1,0 +1,57 @@
+experiment:
+  backend: pytorch
+  data_config:
+    dataset_path: /opt/datasets/Music4All/music4all/onion_elliot/{0}/interactions.tsv
+    root_folder: /opt/datasets/Music4All/music4all/onion_elliot/{0}/splits
+    side_information:
+    - dataloader: EmotionAttribute
+      emotion_features: /opt/datasets/Music4All/music4all/onion_elliot/{0}/emotion_embeddings/gems
+    strategy: hierarchy
+  dataset: onion
+  evaluation:
+    cutoffs:
+    - 5
+    paired_ttest: false
+    simple_metrics:
+    - nDCG
+    wilcoxon_test: false
+  external_models_path: ../external/models/__init__.py
+  gpu: 0
+  path_output_rec_performance: /opt/scratch/marta/results/{0}/full/performance
+  path_output_rec_result: /opt/scratch/marta/results/{0}/full/recs
+  path_output_rec_weight: /opt/scratch/marta/results/{0}/full/weights
+  models:
+    external.RerankingRecommender:
+      batch_size: 512
+      early_stopping:
+        monitor: nDCG@5
+        patience: 5
+        verbose: false
+      epochs: 500
+      factors: 64
+      factors_multimod: 64
+      input_path: /opt/scratch/marta/results/onion/full/recs/DeepMF_seed=123_e=500_emb_dim=256_umlp=[256]_imlp=[256]_negratio=20_reg=0$1_sim=cosine_lr=1e-06_mu=0$0001_fold=0.tsv
+      k:
+      - 100
+      log_wandb: false
+      meta:
+        hyper_opt_alg: grid
+        restore: false
+        save_recs: true
+        validation_metric: nDCG@5
+        validation_rate: 1
+        verbose: false
+      seed: 123
+      similarity:
+      - euclidean
+  prefiltering:
+    core: 5
+    strategy: iterative_k_core
+  splitting:
+    test_splitting:
+      folds: 10
+      strategy: random_cross_validation
+    validation_splitting:
+      strategy: random_subsampling
+      test_ratio: 0.2
+  top_k: 100

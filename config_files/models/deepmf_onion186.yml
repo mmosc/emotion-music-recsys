@@ -1,0 +1,31 @@
+experiment:
+  dataset: onion186
+  path_output_rec_performance: /opt/scratch/marta/results/{0}/full/performance
+  path_output_rec_result: /opt/scratch/marta/results/{0}/full/recs
+  path_output_rec_weight: /opt/scratch/marta/results/{0}/full/weights
+  data_config:
+    strategy: hierarchy
+    root_folder: /opt/datasets/Music4All/music4all/onion_elliot/{0}/splits
+  backend: pytorch
+  evaluation:
+    cutoffs: [ 5 ]
+    simple_metrics: [ nDCG ]
+  models:
+    external.DeepMF:
+      meta:
+        save_weights: False
+        save_recs: False
+      epochs: 100
+      lr: [ 1.e-3, 1.e-4, 1.e-5, 1.e-6 ]
+      batch_size: [ 64, 128, 256 ]
+      reg: [ 1.e-2, 1.e-3, 1.e-4 ]
+      embedding_dim: [ 64, 128, 256, 512 ]
+      user_mlp: [ [256], [512], [1024] ]
+      item_mlp: [ [256], [512], [1024] ]
+      neg_ratio: [ 1, 10, 20 ]
+      similarity: cosine
+      mu: [ 1.e-3, 1.e-4, 1.e-5 ]
+      early_stopping:
+        verbose: False
+        patience: 10
+        monitor: nDCG@5

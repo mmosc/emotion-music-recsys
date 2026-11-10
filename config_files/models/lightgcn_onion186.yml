@@ -1,0 +1,23 @@
+experiment:
+  dataset: onion186
+  path_output_rec_performance: /opt/scratch/marta/results/{0}/full/performance
+  path_output_rec_result: /opt/scratch/marta/results/{0}/full/recs
+  path_output_rec_weight: /opt/scratch/marta/results/{0}/full/weights
+  data_config:
+    strategy: hierarchy
+    root_folder: /opt/datasets/Music4All/music4all/onion_elliot/{0}/splits
+  backend: pytorch
+  evaluation:
+    cutoffs: [ 5 ]
+    simple_metrics: [ nDCG ]
+  models:
+    external.LightGCN:
+      meta:
+        save_weights: False
+        save_recs: False
+      lr: [ 1.e-3, 1.e-4, 1.e-5, 1.e-6 ]
+      n_layers: [ 1, 2, 3 ]
+      batch_size: 256
+      normalize: [ False, True ]
+      factors: [ 64, 128, 256 ]
+      l_w: [ 1.e-3, 1.e-4, 1.e-5 ]

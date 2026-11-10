@@ -1,0 +1,60 @@
+experiment:
+  backend: pytorch
+  data_config:
+    dataset_path: /opt/datasets/Music4All/music4all/onion_elliot/{0}/interactions.tsv
+    root_folder: /opt/datasets/Music4All/music4all/onion_elliot/{0}/splits
+    side_information:
+    - dataloader: EmotionAttribute
+      emotion_features: /opt/datasets/Music4All/music4all/onion_elliot/{0}/emotion_embeddings/gems
+    strategy: hierarchy
+  dataset: onion
+  evaluation:
+    cutoffs:
+    - 5
+    simple_metrics:
+    - nDCG
+  external_models_path: ../external/models/__init__.py
+  gpu: 0
+  models:
+    external.LightGCNM:
+      aggregation:
+      - concat
+      batch_size: 128
+      early_stopping:
+        monitor: nDCG@5
+        patience: 5
+        verbose: false
+      epochs: 500
+      factors: 9
+      factors_multimod: 64
+      l_w:
+      - 0.001
+      loaders: ('EmotionAttribute',)
+      log_wandb: false
+      lr:
+      - 0.0001
+      meta:
+        save_recs: true
+        save_weights: true
+      modalities: ('emotion',)
+      n_layers:
+      - 1
+      normalize:
+      - false
+      seed: 123
+  path_output_rec_performance: /opt/scratch/marta/results/{0}/full_e/performance
+  path_output_rec_result: /opt/scratch/marta/results/{0}/full_e/recs
+  path_output_rec_weight: /opt/scratch/marta/results/{0}/full_e/weights
+  prefiltering:
+    core: 5
+    strategy: iterative_k_core
+  splitting:
+    test_splitting:
+      folds: 10
+      strategy: random_cross_validation
+    validation_splitting:
+      strategy: random_subsampling
+      test_ratio: 0.2
+  top_k: 100
+loaders: ('EmotionAttribute',)
+modalities: ('emotion',)

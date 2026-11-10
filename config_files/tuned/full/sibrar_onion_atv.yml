@@ -1,0 +1,91 @@
+experiment:
+  backend: pytorch
+  data_config:
+    dataset_path: /opt/datasets/Music4All/music4all/onion_elliot/{0}/interactions.tsv
+    root_folder: /opt/datasets/Music4All/music4all/onion_elliot/{0}/splits
+    side_information:
+    - audio_features: /opt/datasets/Music4All/music4all/onion_elliot/{0}/audio_embeddings/maest
+      dataloader: AudioAttribute
+    - dataloader: TextualAttribute
+      textual_features: /opt/datasets/Music4All/music4all/onion_elliot/{0}/textual_embeddings/bert
+    - dataloader: VisualAttribute
+      visual_features: /opt/datasets/Music4All/music4all/onion_elliot/{0}/visual_embeddings/resnet
+    strategy: hierarchy
+  dataset: onion
+  evaluation:
+    cutoffs:
+    - 5
+    paired_ttest: false
+    simple_metrics:
+    - nDCG
+    wilcoxon_test: false
+  external_models_path: ../external/models/__init__.py
+  gpu: 0
+  models:
+    external.SiBraR:
+      agg_method:
+      - gate
+      b_norm:
+      - false
+      batch_size:
+      - 31
+      cl_always_interactions_vs_agg:
+      - true
+      cl_force_interactions_modality:
+      - false
+      cl_temp:
+      - 1.0
+      cl_weight:
+      - 0.001
+      dropout:
+      - 0.01
+      early_stopping:
+        monitor: nDCG@5
+        patience: 10
+        verbose: false
+      emb_dim:
+      - 256
+      epochs: 500
+      factors: 64
+      factors_multimod: 64
+      input_dim:
+      - 2048
+      loaders: ('AudioAttribute', 'TextualAttribute', 'VisualAttribute')
+      log_wandb: false
+      lr:
+      - 1.0e-05
+      meta:
+        defer_recs: true
+        defer_test_eval: true
+        save_recs: true
+        save_weights: true
+      mid_layers:
+      - - 1024
+      modalities: ('audio', 'textual', 'visual')
+      norm_input_feat:
+      - false
+      norm_sbra_input:
+      - false
+      num_neg:
+      - 5
+      seed: 123
+      u_prof:
+      - true
+      w_decay:
+      - 0.001
+  path_output_rec_performance: /opt/scratch/marta/results/{0}/full_atv/performance
+  path_output_rec_result: /opt/scratch/marta/results/{0}/full_atv/recs
+  path_output_rec_weight: /opt/scratch/marta/results/{0}/full_atv/weights
+  prefiltering:
+    core: 5
+    strategy: iterative_k_core
+  splitting:
+    test_splitting:
+      folds: 10
+      strategy: random_cross_validation
+    validation_splitting:
+      strategy: random_subsampling
+      test_ratio: 0.2
+  top_k: 100
+loaders: ('AudioAttribute', 'TextualAttribute', 'VisualAttribute')
+modalities: ('audio', 'textual', 'visual')

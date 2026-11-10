@@ -1,0 +1,69 @@
+experiment:
+  backend: pytorch
+  data_config:
+    dataset_path: /opt/datasets/Music4All/music4all/onion_elliot/{0}/interactions.tsv
+    root_folder: /opt/datasets/Music4All/music4all/onion_elliot/{0}/splits
+    side_information:
+    - audio_features: /opt/datasets/Music4All/music4all/onion_elliot/{0}/audio_embeddings/maest
+      dataloader: AudioAttribute
+    - dataloader: TextualAttribute
+      textual_features: /opt/datasets/Music4All/music4all/onion_elliot/{0}/textual_embeddings/bert
+    - dataloader: VisualAttribute
+      visual_features: /opt/datasets/Music4All/music4all/onion_elliot/{0}/visual_embeddings/resnet
+    - dataloader: EmotionAttribute
+      emotion_features: /opt/datasets/Music4All/music4all/onion_elliot/{0}/emotion_embeddings/emma
+    strategy: hierarchy
+  dataset: emma
+  evaluation:
+    cutoffs:
+    - 5
+    paired_ttest: false
+    simple_metrics:
+    - nDCG
+    wilcoxon_test: false
+  external_models_path: ../external/models/__init__.py
+  gpu: 0
+  models:
+    external.LightGCNM:
+      aggregation:
+      - mean
+      batch_size: 128
+      early_stopping:
+        monitor: nDCG@5
+        patience: 5
+        verbose: false
+      epochs: 500
+      factors:
+      - 256
+      factors_multimod: 64
+      l_w:
+      - 0.001
+      loaders: ('AudioAttribute', 'TextualAttribute', 'VisualAttribute', 'EmotionAttribute')
+      log_wandb: false
+      lr:
+      - 1.0e-05
+      meta:
+        save_recs: true
+        save_weights: true
+      modalities: ('audio', 'textual', 'visual', 'emotion')
+      n_layers:
+      - 1
+      normalize:
+      - false
+      seed: 123
+  path_output_rec_performance: /opt/scratch/marta/results/{0}/full_atve/performance
+  path_output_rec_result: /opt/scratch/marta/results/{0}/full_atve/recs
+  path_output_rec_weight: /opt/scratch/marta/results/{0}/full_atve/weights
+  prefiltering:
+    core: 5
+    strategy: iterative_k_core
+  splitting:
+    test_splitting:
+      folds: 10
+      strategy: random_cross_validation
+    validation_splitting:
+      strategy: random_subsampling
+      test_ratio: 0.2
+  top_k: 100
+loaders: ('AudioAttribute', 'TextualAttribute', 'VisualAttribute', 'EmotionAttribute')
+modalities: ('audio', 'textual', 'visual', 'emotion')

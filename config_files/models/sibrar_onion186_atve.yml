@@ -1,0 +1,46 @@
+modalities: ('audio', 'textual', 'visual', 'emotion')
+loaders: ('AudioAttribute', 'TextualAttribute', 'VisualAttribute', 'EmotionAttribute')
+experiment:
+  dataset: onion186
+  path_output_rec_result: /opt/scratch/marta/results/{0}/full_atve/recs
+  path_output_rec_weight: /opt/scratch/marta/results/{0}/full_atve/weights
+  path_output_rec_performance: /opt/scratch/marta/results/{0}/full_atve/performance
+  data_config:
+    side_information:
+      - dataloader: AudioAttribute
+        audio_features: /opt/datasets/Music4All/music4all/onion_elliot/{0}/audio_embeddings/maest
+      - dataloader: TextualAttribute
+        textual_features: /opt/datasets/Music4All/music4all/onion_elliot/{0}/textual_embeddings/bert
+      - dataloader: VisualAttribute
+        visual_features: /opt/datasets/Music4All/music4all/onion_elliot/{0}/visual_embeddings/resnet
+      - dataloader: EmotionAttribute
+        emotion_features: /opt/datasets/Music4All/music4all/onion_elliot/{0}/emotion_embeddings/gems
+
+  backend: pytorch
+  models:
+    external.SiBraR:
+      meta:
+        save_weights: False
+        save_recs: False
+      epochs: 15
+      lr: [ 1e-5, 1e-4, 1e-6 ]
+      emb_dim: [ 256, 64, 128 ]
+      cl_force_interactions_modality: [ True, False ]
+      cl_always_interactions_vs_agg: [ False, True ]
+      agg_method: [ 'mean', 'gate' ]
+      batch_size: [ 31 ]
+      num_neg: [ 100, 2, 5, 10 ]
+      norm_input_feat: [ False, True ]
+      input_dim: [ 2048, 1024, 512, 256, 128, 64]
+      norm_sbra_input: [  False, True ]
+      mid_layers: [ [512], [1024], [512, 256], [128], [256] ]
+      b_norm: [ False, True ]
+      w_decay: [ 1.e-2, 1.e-1, 1.e-3, 1.e-4, 1.e-5 ]
+      dropout: [ 1.e-3, 7.e-1, 5.e-1, 1.e-1, 1.e-2, 1.e-4 ]
+      u_prof: [ True, False ]
+      cl_weight: [ 1.e-3, 1., 1.e-1, 1.e-2 ]
+      cl_temp: [ 1., 0.01,  0.1, 0.001, 0.0001, 0.00001 ]
+      early_stopping:
+        verbose: False
+        patience: 10
+        monitor: nDCG@5

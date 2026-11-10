@@ -1,0 +1,8 @@
+hyperopt==0.2.7
+numpy==1.19.5
+tqdm
+scipy
+pandas
+PyYAML
+scikit_learn
+wandb

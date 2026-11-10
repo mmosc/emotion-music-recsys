@@ -1,0 +1,39 @@
+# HPO config: LightGCNM on onion (audio + textual + visual + emotion, full-dimensional features)
+# Mirrors config_files/pca9/lightgcnm_onion_atve.yml, but scans factors instead of fixing it to the PCA9 dimensionality.
+
+modalities: ('audio', 'textual', 'visual', 'emotion')
+loaders: ('AudioAttribute', 'TextualAttribute', 'VisualAttribute', 'EmotionAttribute')
+experiment:
+  dataset: onion
+  path_output_rec_result: /opt/scratch/marta/results/{0}/full_atve/recs
+  path_output_rec_weight: /opt/scratch/marta/results/{0}/full_atve/weights
+  path_output_rec_performance: /opt/scratch/marta/results/{0}/full_atve/performance
+  data_config:
+    strategy: hierarchy
+    root_folder: /opt/datasets/Music4All/music4all/onion_elliot/{0}/splits
+    side_information:
+      - dataloader: AudioAttribute
+        audio_features: /opt/datasets/Music4All/music4all/onion_elliot/{0}/audio_embeddings/maest
+      - dataloader: TextualAttribute
+        textual_features: /opt/datasets/Music4All/music4all/onion_elliot/{0}/textual_embeddings/bert
+      - dataloader: VisualAttribute
+        visual_features: /opt/datasets/Music4All/music4all/onion_elliot/{0}/visual_embeddings/resnet
+      - dataloader: EmotionAttribute
+        emotion_features: /opt/datasets/Music4All/music4all/onion_elliot/{0}/emotion_embeddings/gems
+
+  backend: pytorch
+  evaluation:
+    cutoffs: [ 5 ]
+    simple_metrics: [ nDCG ]
+  models:
+    external.LightGCNM:
+      meta:
+        save_weights: False
+        save_recs: False
+      lr: [ 1.e-3, 1.e-4, 1.e-5, 1.e-6 ]
+      factors: [ 64, 128, 256 ]
+      n_layers: [ 1, 2, 3 ]
+      batch_size: 128
+      normalize: [False, True]
+      aggregation: [ 'concat', 'sum', 'mean' ]
+      l_w: [ 1.e-3, 1.e-4, 1.e-5 ]

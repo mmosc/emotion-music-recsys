@@ -1,0 +1,30 @@
+# HPO config: FeatureItemKNN on emma (emotion only)
+# Mirrors config_files/pca9/featureitemknn_emma_e.yml (emotion features are not PCA9-reduced).
+
+modalities: ('emotion',)
+loaders: ('EmotionAttribute',)
+experiment:
+  dataset: emma
+  path_output_rec_result: /opt/scratch/marta/results/{0}/full_e/recs
+  path_output_rec_weight: /opt/scratch/marta/results/{0}/full_e/weights
+  path_output_rec_performance: /opt/scratch/marta/results/{0}/full_e/performance
+  data_config:
+    strategy: hierarchy
+    root_folder: /opt/datasets/Music4All/music4all/onion_elliot/{0}/splits
+    side_information:
+      - dataloader: EmotionAttribute
+        emotion_features: /opt/datasets/Music4All/music4all/onion_elliot/{0}/emotion_embeddings/emma
+
+  evaluation:
+    cutoffs: [ 5 ]
+    simple_metrics: [ nDCG ]
+  models:
+    external.FeatureItemKNN:
+      meta:
+        save_weights: False
+        save_recs: False
+      neighbors: [ 20, 50, 70, 100 ]
+      similarity: [ cosine, dot, euclidean ]
+      aggregation: [ concat, ensemble ]
+      modal_sim_factor: [ 0.01, 0.025, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5 ]
+      implementation: standard

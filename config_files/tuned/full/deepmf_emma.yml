@@ -1,0 +1,61 @@
+experiment:
+  backend: pytorch
+  data_config:
+    dataset_path: /opt/datasets/Music4All/music4all/onion_elliot/{0}/interactions.tsv
+    root_folder: /opt/datasets/Music4All/music4all/onion_elliot/{0}/splits
+    strategy: hierarchy
+  dataset: emma
+  evaluation:
+    cutoffs:
+    - 5
+    paired_ttest: false
+    simple_metrics:
+    - nDCG
+    wilcoxon_test: false
+  external_models_path: ../external/models/__init__.py
+  gpu: 0
+  models:
+    external.DeepMF:
+      batch_size:
+      - 256
+      early_stopping:
+        monitor: nDCG@5
+        patience: 10
+        verbose: false
+      embedding_dim:
+      - 512
+      epochs: 100
+      factors: 64
+      factors_multimod: 64
+      item_mlp:
+      - - 512
+      log_wandb: false
+      lr:
+      - 0.0001
+      meta:
+        save_recs: true
+        save_weights: true
+      mu:
+      - 0.001
+      neg_ratio:
+      - 1
+      reg:
+      - 0.01
+      seed: 123
+      similarity: cosine
+      user_mlp:
+      - - 1024
+  path_output_rec_performance: /opt/scratch/marta/results/{0}/full/performance
+  path_output_rec_result: /opt/scratch/marta/results/{0}/full/recs
+  path_output_rec_weight: /opt/scratch/marta/results/{0}/full/weights
+  prefiltering:
+    core: 5
+    strategy: iterative_k_core
+  splitting:
+    test_splitting:
+      folds: 10
+      strategy: random_cross_validation
+    validation_splitting:
+      strategy: random_subsampling
+      test_ratio: 0.2
+  top_k: 100

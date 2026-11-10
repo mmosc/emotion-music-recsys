@@ -1,0 +1,19 @@
+experiment:
+  dataset: onion186
+  path_output_rec_performance: /opt/scratch/marta/results/{0}/full/performance
+  path_output_rec_result: /opt/scratch/marta/results/{0}/full/recs
+  path_output_rec_weight: /opt/scratch/marta/results/{0}/full/weights
+  data_config:
+    strategy: hierarchy
+    root_folder: /opt/datasets/Music4All/music4all/onion_elliot/{0}/splits
+  evaluation:
+    cutoffs: [ 5 ]
+    simple_metrics: [ nDCG ]
+  models:
+    ItemKNN:
+      meta:
+        save_weights: False
+        save_recs: False
+      neighbors: [ 20, 50, 70, 100 ]
+      similarity: [ cosine, dot, euclidean ]
+      implementation: standard

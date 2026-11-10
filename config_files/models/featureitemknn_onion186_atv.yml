@@ -1,0 +1,34 @@
+# HPO config: FeatureItemKNN on onion (audio + textual + visual, full-dimensional features)
+# Mirrors config_files/pca9/featureitemknn_onion_atv.yml but uses full embeddings instead of PCA9-reduced.
+
+modalities: ('audio', 'textual', 'visual')
+loaders: ('AudioAttribute', 'TextualAttribute', 'VisualAttribute')
+experiment:
+  dataset: onion186
+  path_output_rec_result: /opt/scratch/marta/results/{0}/full_atv/recs
+  path_output_rec_weight: /opt/scratch/marta/results/{0}/full_atv/weights
+  path_output_rec_performance: /opt/scratch/marta/results/{0}/full_atv/performance
+  data_config:
+    strategy: hierarchy
+    root_folder: /opt/datasets/Music4All/music4all/onion_elliot/{0}/splits
+    side_information:
+      - dataloader: AudioAttribute
+        audio_features: /opt/datasets/Music4All/music4all/onion_elliot/{0}/audio_embeddings/maest
+      - dataloader: TextualAttribute
+        textual_features: /opt/datasets/Music4All/music4all/onion_elliot/{0}/textual_embeddings/bert
+      - dataloader: VisualAttribute
+        visual_features: /opt/datasets/Music4All/music4all/onion_elliot/{0}/visual_embeddings/resnet
+
+  evaluation:
+    cutoffs: [ 5 ]
+    simple_metrics: [ nDCG ]
+  models:
+    external.FeatureItemKNN:
+      meta:
+        save_weights: False
+        save_recs: False
+      neighbors: [ 20, 50, 70, 100 ]
+      similarity: [ cosine, dot, euclidean ]
+      aggregation: [ concat, ensemble ]
+      modal_sim_factor: [ 0.01, 0.025, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5 ]
+      implementation: standard

@@ -1,0 +1,33 @@
+# HPO config: LightGCNM on onion (emotion only)
+# Mirrors config_files/pca9/lightgcnm_onion_e.yml, but scans factors instead of fixing it to the PCA9 dimensionality.
+
+modalities: ('emotion',)
+loaders: ('EmotionAttribute',)
+experiment:
+  dataset: onion186
+  path_output_rec_result: /opt/scratch/marta/results/{0}/full_e/recs
+  path_output_rec_weight: /opt/scratch/marta/results/{0}/full_e/weights
+  path_output_rec_performance: /opt/scratch/marta/results/{0}/full_e/performance
+  data_config:
+    strategy: hierarchy
+    root_folder: /opt/datasets/Music4All/music4all/onion_elliot/{0}/splits
+    side_information:
+      - dataloader: EmotionAttribute
+        emotion_features: /opt/datasets/Music4All/music4all/onion_elliot/{0}/emotion_embeddings/gems
+
+  backend: pytorch
+  evaluation:
+    cutoffs: [ 5 ]
+    simple_metrics: [ nDCG ]
+  models:
+    external.LightGCNM:
+      meta:
+        save_weights: False
+        save_recs: False
+      lr: [ 1.e-3, 1.e-4, 1.e-5, 1.e-6 ]
+      factors: [ 64, 128, 256 ]
+      n_layers: [ 1, 2, 3 ]
+      batch_size: 128
+      normalize: [False, True]
+      aggregation: [ 'concat', 'sum', 'mean' ]
+      l_w: [ 1.e-3, 1.e-4, 1.e-5 ]

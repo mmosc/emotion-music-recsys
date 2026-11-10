@@ -1,0 +1,104 @@
+experiment:
+  backend: pytorch
+  data_config:
+    dataset_path: /opt/datasets/Music4All/music4all/onion_elliot/{0}/interactions.tsv
+    side_information:
+    - audio_features: /opt/datasets/Music4All/music4all/onion_elliot/{0}/audio_embeddings/maest
+      dataloader: AudioAttribute
+    - dataloader: TextualAttribute
+      textual_features: /opt/datasets/Music4All/music4all/onion_elliot/{0}/textual_embeddings/bert
+    - dataloader: VisualAttribute
+      visual_features: /opt/datasets/Music4All/music4all/onion_elliot/{0}/visual_embeddings/resnet
+    - dataloader: EmotionAttribute
+      emotion_features: /opt/datasets/Music4All/music4all/onion_elliot/{0}/emotion_embeddings/gems
+    strategy: dataset
+  dataset: onion186
+  evaluation:
+    cutoffs:
+    - 1
+    - 5
+    - 10
+    - 20
+    paired_ttest: false
+    simple_metrics:
+    - Recall
+    - Precision
+    - nDCG
+    - MRR
+    - HR
+    - EFD
+    - EPC
+    - ARP
+    - PopREO
+    - PopRSP
+    - ItemCoverage
+    - UserCoverage
+    wilcoxon_test: false
+  external_models_path: ../external/models/__init__.py
+  gpu: 0
+  models:
+    external.SiBraR:
+      agg_method:
+      - mean
+      b_norm:
+      - false
+      batch_size:
+      - 31
+      cl_always_interactions_vs_agg:
+      - false
+      cl_force_interactions_modality:
+      - false
+      cl_temp:
+      - 1.0
+      cl_weight:
+      - 0.01
+      dropout:
+      - 0.1
+      early_stopping:
+        monitor: nDCG@5
+        patience: 10
+        verbose: false
+      emb_dim:
+      - 256
+      epochs: 500
+      factors: 64
+      factors_multimod: 64
+      input_dim:
+      - 2048
+      loaders: ('AudioAttribute', 'TextualAttribute', 'VisualAttribute', 'EmotionAttribute')
+      log_wandb: false
+      lr:
+      - 1.0e-06
+      meta:
+        save_recs: true
+        save_weights: true
+      mid_layers:
+      - - 512
+      modalities: ('audio', 'textual', 'visual', 'emotion')
+      norm_input_feat:
+      - false
+      norm_sbra_input:
+      - false
+      num_neg:
+      - 10
+      seed: 123
+      u_prof:
+      - true
+      w_decay:
+      - 0.1
+  path_output_rec_performance: /opt/scratch/marta/results/{0}/full_atve/performance
+  path_output_rec_result: /opt/scratch/marta/results/{0}/full_atve/recs
+  path_output_rec_weight: /opt/scratch/marta/results/{0}/full_atve/weights
+  prefiltering:
+    core: 5
+    strategy: iterative_k_core
+  splitting:
+    test_splitting:
+      folds: 10
+      strategy: random_cross_validation
+    validation_splitting:
+      strategy: random_subsampling
+      test_ratio: 0.2
+  top_k: 100
+loaders: ('AudioAttribute', 'TextualAttribute', 'VisualAttribute', 'EmotionAttribute')
+modalities: ('audio', 'textual', 'visual', 'emotion')

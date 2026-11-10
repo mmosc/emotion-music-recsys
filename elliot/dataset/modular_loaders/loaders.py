@@ -1,0 +1,4 @@
+from elliot.dataset.modular_loaders.visual.visual_attribute import VisualAttribute
+from elliot.dataset.modular_loaders.textual.textual_attribute import TextualAttribute
+from elliot.dataset.modular_loaders.audio.audio_attribute import AudioAttribute
+from elliot.dataset.modular_loaders.emotion.emotion_attribute import EmotionAttribute

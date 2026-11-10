@@ -1,0 +1,18 @@
+meta:
+  hyper_opt_alg: grid
+  verbose: False
+#  save_weights: True
+  save_recs: True
+  validation_rate: 1
+  validation_metric: nDCG@5
+  restore: False
+epochs: 500
+batch_size: 512
+factors: 64
+factors_multimod: 64
+seed: 123
+early_stopping:
+  verbose: False
+  patience: 5
+  monitor: nDCG@5
+log_wandb: False
